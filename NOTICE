@@ -1,0 +1,20 @@
+Quantum on Stellar
+Copyright 2026 Carlos de la Figuera and contributors
+
+Licensed under the Apache License 2.0 (LICENSE).
+
+fonts/ holds three typefaces under the SIL Open Font License 1.1, each with its licence next to it:
+Departure Mono, Newsreader (two cuts of it: Display Regular and Text Medium) and Atkinson
+Hyperlegible Next.
+
+The two cuts of Newsreader are fixed instances of its variable font, made with fontTools
+(varLib.instancer) from the Latin file of @fontsource-variable/newsreader 5.3.0
+(newsreader-latin-opsz-normal.woff2): optical size 72 at weight 400 for headlines, and optical
+size 24 at weight 500 for names. Nothing else in them is changed.
+
+The word VERIFIED on the stamp (page.mjs) is drawn from outlines of Anton, Copyright 2020 The Anton
+Project Authors (https://github.com/googlefonts/AntonFont.git), under the SIL Open Font License 1.1.
+The text of that licence is the one in fonts/Newsreader-LICENSE.txt.
+
+This is a community project. It is not affiliated with, sponsored or endorsed by the Stellar
+Development Foundation. "Stellar" is a trademark of the Stellar Development Foundation.

@@ -1,0 +1,60 @@
+name: Add your work
+description: Something post-quantum built on or for Stellar, to be listed on the page
+title: "Add: "
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: The work's name, as it should be listed
+    validations:
+      required: true
+  - type: input
+    id: by
+    attributes:
+      label: Who built it
+      description: A person, a team or a company, and a link to them if there is one
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Signatures
+        - Accounts
+        - Dormant accounts
+        - Proofs
+        - Privacy
+        - Validators
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: status
+    attributes:
+      label: Where it stands
+      description: "In two or three words: write-up, prototype, on testnet, on mainnet"
+    validations:
+      required: true
+  - type: textarea
+    id: text
+    attributes:
+      label: What it does
+      description: One or two plain sentences
+    validations:
+      required: true
+  - type: textarea
+    id: caveat
+    attributes:
+      label: What it is not yet
+      description: "One sentence: not audited, testnet only, settings still open. Every entry on the page has one."
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      description: "Public and https: the code, a write-up or a demo"
+    validations:
+      required: true

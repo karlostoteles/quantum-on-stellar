@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quantum on Stellar: the preview card</title>
+<style>
+/* The picture a link to the page carries when it is shared: 1200 by 630. It is the page's own
+   things, set larger: the sign, the display with the plan's three stages, the printer's key.
+   Nothing on it goes out of date by itself (no statuses). The bottom-left corner is left empty:
+   that is where a post prints the site's address over the picture.
+   Sizes in Departure Mono are multiples of 11 px, the grid it is drawn on.
+   node card/render.cjs writes it to ../og.png. */
+@font-face {
+  font-family: "Departure Mono";
+  src: url("../fonts/DepartureMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("../fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");
+  font-weight: 400;
+}
+:root {
+  --counter: #2a2d74;
+  --machine: #14163a;
+  --machine-lip: #3b3f95;
+  --paper: #f5f6f4;
+  --ink: #1d2142;
+  --go: #ffd43d;
+  --go-edge: #b58e0c;
+  --glow: #7cf5d6;
+  --glass: #04110e;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+html,
+body {
+  width: 1200px;
+  height: 630px;
+  overflow: hidden;
+}
+body {
+  position: relative;
+  background: var(--counter);
+  color: var(--paper);
+  font-family: "Departure Mono", monospace;
+  font-size: 22px;
+  font-weight: normal;
+  line-height: 1.4;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mast {
+  position: absolute;
+  left: 72px;
+  top: 100px;
+  width: 462px;
+}
+.big {
+  font-size: 66px;
+  font-weight: normal;
+  line-height: 1.08;
+}
+.lede {
+  margin-top: 22px;
+  font-family: "Atkinson Hyperlegible Next", sans-serif;
+  font-size: 31px;
+  line-height: 1.36;
+  color: #cfd2ef;
+}
+.who {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 2px 7px;
+  background: var(--paper);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.board {
+  position: absolute;
+  left: 580px;
+  top: 58px;
+  width: 564px;
+  padding: 10px;
+  border-radius: 18px;
+  background: var(--machine);
+  box-shadow: inset 0 1px 0 var(--machine-lip), 0 16px 38px rgba(8, 9, 40, 0.4);
+}
+.glass {
+  padding: 16px 20px 15px;
+  border-radius: 10px;
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px #000, inset 0 3px 12px rgba(0, 0, 0, 0.9);
+  color: var(--glow);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow: 0 0 9px rgba(124, 245, 214, 0.55);
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.72;
+}
+.stage {
+  margin-top: 11px;
+  padding-top: 12px;
+  border-top: 2px dashed rgba(124, 245, 214, 0.26);
+}
+.stage .t {
+  display: flex;
+  align-items: baseline;
+  gap: 21px;
+  font-size: 33px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.stage .n {
+  flex: none;
+  width: 40px;
+  text-align: center;
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+.stage.now .n {
+  background: var(--glow);
+  color: var(--glass);
+  text-shadow: none;
+  box-shadow: 0 0 10px rgba(124, 245, 214, 0.5);
+}
+.stage .w {
+  padding-left: 61px;
+  opacity: 0.72;
+}
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 11px;
+  padding-top: 12px;
+  border-top: 2px dashed rgba(124, 245, 214, 0.26);
+}
+.led {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--glow);
+  box-shadow: 0 0 9px var(--glow);
+}
+
+/* The printer, as it sits at the bottom of a phone's screen: its slot, its display, its one key. */
+.printer {
+  position: absolute;
+  left: 600px;
+  top: 546px;
+  width: 524px;
+  height: 120px;
+  padding: 0 16px;
+  border-radius: 18px 18px 0 0;
+  background: var(--machine);
+  box-shadow: inset 0 1px 0 var(--machine-lip), 0 -8px 22px rgba(7, 8, 32, 0.42);
+}
+.slot {
+  height: 11px;
+  margin: 0 8px;
+  border-radius: 0 0 6px 6px;
+  background: #05061a;
+  box-shadow: inset 0 5px 6px #000;
+}
+.dock {
+  display: flex;
+  gap: 14px;
+  margin-top: 11px;
+}
+.vfd {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 55px;
+  padding: 0 18px;
+  border-radius: 8px;
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px #000, inset 0 3px 10px rgba(0, 0, 0, 0.9);
+  color: var(--glow);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow: 0 0 9px rgba(124, 245, 214, 0.55);
+}
+.key {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: 51px;
+  padding: 0 24px;
+  border-radius: 11px;
+  background: var(--go);
+  box-shadow: 0 4px 0 var(--go-edge);
+  color: var(--ink);
+}
+</style>
+</head>
+<body>
+  <div class="mast">
+    <h1 class="big">Quantum on Stellar</h1>
+    <p class="lede">Where Stellar's move to quantum-safe cryptography stands, and what people have built so far.</p>
+    <p class="who">Community page, not run by SDF.</p>
+  </div>
+
+  <div class="board">
+    <div class="glass">
+      <p class="head"><span>Quantum Preparedness Plan</span><span>SDF</span></p>
+      <div class="stage now">
+        <p class="t"><span class="n">1</span><span>ML-DSA in contracts</span></p>
+        <p class="w">2026</p>
+      </div>
+      <div class="stage">
+        <p class="t"><span class="n">2</span><span>Quantum-safe signers</span></p>
+        <p class="w">2027</p>
+      </div>
+      <div class="stage">
+        <p class="t"><span class="n">3</span><span>Ed25519 retired</span></p>
+        <p class="w">No date</p>
+      </div>
+      <p class="foot"><span class="led"></span><span>Read from the network, live</span></p>
+    </div>
+  </div>
+
+  <div class="printer">
+    <div class="slot"></div>
+    <div class="dock">
+      <p class="vfd"><span>Ready</span><span class="led"></span></p>
+      <p class="key">Run the demo</p>
+    </div>
+  </div>
+</body>
+</html>

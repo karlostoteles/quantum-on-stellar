@@ -1,0 +1,325 @@
+{
+  "name": "Quantum on Stellar",
+  "title": "Quantum on Stellar: post-quantum signatures, ZK and privacy",
+  "description": "Where Stellar's move to quantum-safe cryptography stands, what is still open, and what people have built so far: signatures, zero-knowledge proofs and privacy.",
+  "metaDescription": "Where Stellar's move to quantum-safe cryptography stands and what has been built: ML-DSA signatures, hash-based ZK proofs and privacy, account recovery. Community page.",
+  "independence": "Community page, not run by SDF.",
+  "runBy": "Carlos de la Figuera",
+  "checked": "2026-11-19",
+  "headlines": {
+    "open": "{n} things the plan leaves for later",
+    "work": "{n} works listed, and room for yours",
+    "more": "Stellar's own documents, and short answers"
+  },
+  "networks": {
+    "testnetRpc": "https://soroban-testnet.stellar.org",
+    "mainnetHorizon": "https://horizon.stellar.org"
+  },
+  "plan": {
+    "name": "Quantum Preparedness Plan",
+    "by": "SDF",
+    "published": "2026-06-09",
+    "url": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+    "upgrade": {
+      "protocol": 30,
+      "name": "Bell",
+      "mainnetVote": "2026-11-23T17:00:00Z",
+      "url": "https://stellar.org/blog/developers/introducing-bell-protocol-30-on-stellar"
+    },
+    "stages": [
+      {
+        "when": "2026",
+        "title": "ML-DSA in contracts",
+        "note": "Contract accounts can check post-quantum signatures: CAP-87, in Protocol 30 (Bell).",
+        "live": true
+      },
+      {
+        "when": "2027",
+        "title": "Quantum-safe signers",
+        "note": "Any account adds one next to its Ed25519 key. Same address, opt-in.",
+        "status": "Planned"
+      },
+      {
+        "when": "No date",
+        "title": "Ed25519 retired",
+        "note": "No longer accepted for new transactions, from a ledger set by how close the threat is.",
+        "status": "Not scheduled"
+      }
+    ]
+  },
+  "open": [
+    {
+      "id": "dormant",
+      "title": "Dormant accounts",
+      "short": "Accounts nobody is watching would be frozen. Can their owners still prove they are theirs?",
+      "text": "Every address shows its public key, so accounts nobody is watching are exposed too, and would be frozen once Ed25519 is retired. Can an owner still prove the account is theirs from the seed, or do the funds stay locked?",
+      "sdf": "Will open it to community design instead of deciding alone.",
+      "tried": [
+        "recovery"
+      ]
+    },
+    {
+      "id": "proofs",
+      "title": "Proofs without pairings",
+      "short": "Today's zero-knowledge proofs rest on curves a quantum computer breaks. What takes their place?",
+      "text": "Zero-knowledge proofs on Stellar today use pairing curves, which a quantum computer breaks the way it breaks Ed25519. Nothing drops in at a similar cost. The plan names STARKs and lattice-based proofs as candidates.",
+      "sdf": "Will bring the ZK teams together on a shared research agenda.",
+      "tried": [
+        "phone",
+        "verifier"
+      ]
+    },
+    {
+      "id": "validators",
+      "title": "Validator signatures",
+      "short": "Consensus is signed with Ed25519 too: hundreds of validators to move together.",
+      "text": "Consensus messages are signed with Ed25519 too. The plan handles them apart from accounts, with an upgrade to the consensus protocol: hundreds of validators to coordinate, not tens of millions of accounts.",
+      "sdf": "No date or design in the plan yet.",
+      "tried": []
+    }
+  ],
+  "line": {
+    "title": "Hashes only",
+    "note": "The line of work behind this page, and where it stands.",
+    "asOf": "2026-11-19",
+    "headline": "Your device makes the proof. Stellar checks it.",
+    "standfirst": "STARK proofs checked by a contract with nothing but hashes: no pairing curves, no trusted setup.",
+    "caveat": "A research prototype: not audited, the hiding of the secret is unreviewed, and at these settings it is not yet at post-quantum strength.",
+    "scene": {
+      "device": {
+        "name": "Your device",
+        "does": "makes the proof"
+      },
+      "proof": {
+        "figure": "45 KB",
+        "name": "45 KB of proof",
+        "does": "nothing but hashes"
+      },
+      "chain": {
+        "name": "Stellar testnet",
+        "does": "a contract checks it",
+        "figures": "48–50 M instructions, 12% of one transaction",
+        "share": 12
+      }
+    },
+    "text": [
+      "A quantum computer weakens hash functions but does not break them. We are measuring how far Stellar can go on hashes alone: STARK proofs checked by a contract, with no pairing curves and no trusted setup.",
+      "The latest step is the check at the centre of a privacy pool: a proof that a secret is one of a million leaves of a tree, with a one-time tag so it cannot be used twice. It is generated in a browser and verified on testnet. It is not audited, and not at post-quantum strength with these settings: that takes larger proofs."
+    ],
+    "figures": [
+      [
+        "Instructions to verify",
+        "48–50 M"
+      ],
+      [
+        "Share of one transaction",
+        "12%"
+      ],
+      [
+        "Proof size",
+        "45 KB"
+      ],
+      [
+        "Generated in a browser",
+        "1 to 2 s"
+      ],
+      [
+        "On a phone",
+        "not measured yet"
+      ],
+      [
+        "Contract size",
+        "84% of the limit"
+      ],
+      [
+        "Curves, trusted setup",
+        "none"
+      ],
+      [
+        "Hiding of the secret",
+        "unreviewed"
+      ],
+      [
+        "Audited",
+        "no"
+      ]
+    ],
+    "links": [
+      {
+        "text": "Run the demo",
+        "href": "demo/",
+        "internal": true
+      },
+      {
+        "text": "Read the write-up",
+        "href": "https://claude.ai/artifact/Tce78Gu5qtqw4qCZFWhTLN"
+      }
+    ]
+  },
+  "work": [
+    {
+      "id": "phone",
+      "title": "From your phone to Stellar",
+      "by": "Carlos de la Figuera",
+      "area": "Proofs",
+      "status": "On testnet",
+      "live": true,
+      "text": "Your device generates a STARK proof and a contract on testnet checks it with hash functions only.",
+      "caveat": "Research prototype, not audited.",
+      "links": [
+        {
+          "text": "Run it here",
+          "href": "demo/",
+          "internal": true
+        }
+      ],
+      "byUrl": ""
+    },
+    {
+      "id": "verifier",
+      "title": "Verify a STARK on Stellar",
+      "by": "Carlos de la Figuera",
+      "area": "Proofs",
+      "status": "On testnet",
+      "live": true,
+      "text": "A Soroban contract that verifies S-two proofs directly: no pairing curves, no trusted setup, no SNARK wrapper.",
+      "caveat": "Research prototype, not audited.",
+      "links": [
+        {
+          "text": "See the three proofs and their cost",
+          "href": "https://claude.ai/artifact/FERrsCAR3ztwUu2WLy3UGd"
+        },
+        {
+          "text": "Read the write-up",
+          "href": "https://claude.ai/artifact/Tce78Gu5qtqw4qCZFWhTLN"
+        }
+      ],
+      "byUrl": ""
+    },
+    {
+      "id": "recovery",
+      "title": "Recovery after the cutoff",
+      "by": "Carlos de la Figuera",
+      "area": "Dormant accounts",
+      "status": "On testnet",
+      "live": true,
+      "text": "A commit, then a reveal: a dormant key hands over to a new ML-DSA key, and whoever reads the reveal arrives too late to take it.",
+      "caveat": "Test seeds only. Recovering a real account would have to be a rule of the protocol.",
+      "links": [
+        {
+          "text": "See how it works and what it costs",
+          "href": "https://claude.ai/artifact/P8axyK8yQZT4QKuMdomCo6"
+        }
+      ],
+      "byUrl": ""
+    },
+    {
+      "id": "stellar-pq",
+      "title": "stellar-pq",
+      "by": "Soundness Labs",
+      "area": "Accounts",
+      "status": "Inactive",
+      "live": false,
+      "text": "Post-quantum signatures for Stellar smart accounts: a Falcon-512 verifier and a Soroban account that uses it. Funded by the Stellar Community Fund; the code is public.",
+      "caveat": "Experimental and unaudited, as its README says. The project is marked inactive in the StellarLight directory.",
+      "links": [
+        {
+          "text": "Code on GitHub",
+          "href": "https://github.com/SoundnessLabs/stellar-pq"
+        }
+      ],
+      "byUrl": ""
+    }
+  ],
+  "add": {
+    "title": "Your work",
+    "text": "Building something post-quantum on Stellar? Signatures, accounts, proofs or privacy: it belongs in this list. The list is kept in a public repository: add your work there with an issue or a pull request.",
+    "action": "Open the list",
+    "href": "https://github.com/karlostoteles/quantum-on-stellar"
+  },
+  "sources": [
+    {
+      "group": "From SDF",
+      "items": [
+        {
+          "text": "Introducing the Quantum Preparedness Plan",
+          "href": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+          "note": "The plan itself. 9 Jun 2026"
+        },
+        {
+          "text": "Introducing Bell, Protocol 30",
+          "href": "https://stellar.org/blog/developers/introducing-bell-protocol-30-on-stellar",
+          "note": "The upgrade that carries stage 1. 20 Oct 2026"
+        },
+        {
+          "text": "Bell upgrade guide",
+          "href": "https://stellar.org/blog/developers/bell-protocol-30-upgrade-guide",
+          "note": "Dates, releases and what changes for developers"
+        },
+        {
+          "text": "ZK proofs on Stellar",
+          "href": "https://developers.stellar.org/docs/build/apps/zk",
+          "note": "Developer docs: the curves and hashes available today"
+        },
+        {
+          "text": "Privacy on Stellar",
+          "href": "https://developers.stellar.org/docs/build/apps/privacy",
+          "note": "Developer docs: on-chain verifiers and private payments"
+        }
+      ]
+    },
+    {
+      "group": "Protocol and standards",
+      "items": [
+        {
+          "text": "CAP-0087: host functions for ML-DSA",
+          "href": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0087.md",
+          "note": "The proposal behind stage 1, by Jay Geng"
+        },
+        {
+          "text": "CAP-87 discussion",
+          "href": "https://github.com/orgs/stellar/discussions/1915",
+          "note": "Where the proposal was argued"
+        },
+        {
+          "text": "FIPS 204: ML-DSA",
+          "href": "https://csrc.nist.gov/pubs/fips/204/final",
+          "note": "The signature standard, NIST, 2024"
+        }
+      ]
+    },
+    {
+      "group": "Video",
+      "items": [
+        {
+          "text": "CAP-87 walkthrough at the developers meeting",
+          "href": "https://www.youtube.com/watch?v=-JaNSo6jN_U",
+          "note": "SDF, 17 Sep 2026"
+        }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "q": "Is Stellar (XLM) quantum-safe today?",
+      "a": "Not yet. Accounts and validators sign with Ed25519, which a large enough quantum computer would break; no such machine is publicly known. SDF's plan moves the network over in three stages, and the display at the top of this page shows where the first one stands."
+    },
+    {
+      "q": "Will I have to move my funds to a new account?",
+      "a": "The plan says no. From stage 2, an existing account adds a quantum-safe signer next to its Ed25519 key and keeps its address and its balances."
+    },
+    {
+      "q": "What is ML-DSA?",
+      "a": "A signature scheme built on lattices, standardised by NIST in 2024 as FIPS 204. Protocol 30 lets Stellar's smart contracts verify ML-DSA signatures, so a contract account can ask for one."
+    },
+    {
+      "q": "What does hash-based mean, and why does it matter?",
+      "a": "Signatures and proofs built on elliptic curves all fall to the same quantum attack. Hash functions do not: a quantum computer makes them weaker, not broken, and larger parameters make up for it. STARK proofs rely on hashes alone, which is why SDF's plan names them as a candidate for zero-knowledge after pairings."
+    },
+    {
+      "q": "Is the demo on this page post-quantum?",
+      "a": "Its kind of cryptography is; its strength is not there yet. With the settings that fit in one Stellar transaction today, the proof would not hold against a quantum attacker. Getting there means larger proofs: a matter of cost and limits, not of starting over."
+    }
+  ],
+  "runByUrl": ""
+}

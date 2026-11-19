@@ -1,0 +1,1467 @@
+/* Quantum on Stellar.
+   Two parts. On top, the counter: the sign, the display and the printer with its yellow key, in
+   the demo's look. Under it, the page proper: a few bands, one per topic and each in its own tone,
+   with a headline, one picture that plays once, a line or two, and the full text folded away.
+   Three typefaces, each with one job: Departure Mono on the machines (the display, the printer,
+   the screens inside the pictures); Newsreader for headlines and names; Atkinson Hyperlegible Next,
+   made to be easy to read, for sentences. */
+
+@font-face {
+  font-family: "Departure Mono";
+  src: url("fonts/DepartureMono-Regular.woff2") format("woff2");
+  font-display: block;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("fonts/AtkinsonHyperlegibleNext-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+/* Newsreader, cut twice: one drawn for large sizes, one for names at text size. */
+@font-face {
+  font-family: "Newsreader Display";
+  src: url("fonts/NewsreaderDisplay-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Newsreader Text";
+  src: url("fonts/NewsreaderText-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+
+:root {
+  --counter: #2a2d74;
+  --machine: #14163a;
+  --machine-lip: #3b3f95;
+  --paper: #f5f6f4;
+  --ink: #1d2142;
+  --go: #ffd43d;
+  --go-edge: #b58e0c;
+  --glow: #7cf5d6;
+  --glass: #04110e;
+
+  --mono: "Departure Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --text: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --display: "Newsreader Display", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --serif: "Newsreader Text", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+
+  --cols: 32;
+  --advance: 0.64; /* a Departure Mono character is 7/11 em wide, rounded up */
+  --pad: 16px;
+  --gutter: 14px;
+  --size: clamp(12px, calc((100vw - 2 * var(--pad) - 2 * var(--gutter)) / (var(--cols) * var(--advance))), 16px);
+  /* The page's module: the width of the demo's receipt, 32 characters of the display and its
+     padding. Written as a length (not in ch) so every part of the page measures the same one,
+     whatever typeface it is set in, and their edges line up. */
+  --slip: calc(var(--cols) * var(--advance) * var(--size) + 2 * var(--pad));
+  --gap: 24px;
+  --page: var(--slip);
+}
+@media (min-width: 800px) {
+  :root {
+    --page: calc(2 * var(--slip) + var(--gap));
+  }
+}
+@media (min-width: 1180px) {
+  :root {
+    --page: calc(3 * var(--slip) + 2 * var(--gap));
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  background: var(--counter);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 12px;
+  scroll-padding-bottom: calc(var(--printer, 92px) + 18px);
+}
+body {
+  margin: 0;
+  background: var(--counter);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: var(--size);
+  line-height: 1.4;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+}
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+.defs {
+  position: absolute;
+}
+/* The sentence under the sign is set in the reading face, at a size that does not shrink with the
+   screen. */
+.read {
+  font-family: var(--text);
+  font-size: 1rem;
+  line-height: 1.55;
+  letter-spacing: 0.005em;
+}
+@media (min-width: 800px) {
+  .read {
+    font-size: 1.0625rem;
+  }
+}
+
+.wrap {
+  width: min(var(--page), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+/* ---- The sign, the display, the printer ------------------------------------------------------- */
+
+.hero {
+  display: grid;
+  gap: 20px var(--gap);
+  padding: 26px 0 34px;
+}
+.big {
+  font-size: 2em;
+  line-height: 1.12;
+}
+.lede {
+  max-width: 34rem;
+  margin-top: 0.5em;
+  color: #cfd2ef;
+}
+.who {
+  display: inline-block;
+  margin-top: 0.9em;
+  padding: 0.1em 0.5ch;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.board {
+  padding: 9px;
+  border-radius: 15px;
+  background: var(--machine);
+  box-shadow: inset 0 1px 0 var(--machine-lip), 0 14px 34px rgba(8, 9, 40, 0.38);
+}
+.glass {
+  padding: 0.75em 12px 0.7em;
+  border-radius: 8px;
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px #000, inset 0 3px 12px rgba(0, 0, 0, 0.9);
+  color: var(--glow);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(124, 245, 214, 0.55);
+}
+.glass a:focus-visible {
+  outline: 2px solid var(--glow);
+  outline-offset: 2px;
+}
+.board-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1ch;
+  font-size: 0.82em;
+  opacity: 0.72;
+}
+.stages {
+  list-style: none;
+  margin: 0.55em 0 0;
+  padding: 0;
+}
+.stage {
+  padding: 0.6em 0 0.65em;
+  border-top: 1px dashed rgba(124, 245, 214, 0.26);
+}
+.stage-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1ch;
+}
+/* The stage's number: outlined, and filled for the stage that is happening. */
+.stage-head .n {
+  flex: none;
+  padding: 0 0.5ch;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+.stage.now .n {
+  background: var(--glow);
+  color: var(--glass);
+  text-shadow: none;
+  box-shadow: 0 0 9px rgba(124, 245, 214, 0.5);
+}
+.stage-head .t {
+  flex: 1;
+}
+.stage-head .when {
+  flex: none;
+  white-space: nowrap;
+}
+.stage-note {
+  margin: 0.3em 0 0.5em;
+  font-size: 0.82em;
+  opacity: 0.72;
+  text-transform: none;
+}
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+}
+.stat .k {
+  flex: none;
+}
+.stat .v {
+  margin-left: auto;
+  text-align: right;
+}
+.led {
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: #1c3f37;
+}
+.led.on {
+  background: var(--glow);
+  box-shadow: 0 0 8px var(--glow);
+}
+/* Due: waiting on something with a date. It does not blink: the page is read, not watched. */
+.led.due {
+  background: var(--go);
+  box-shadow: 0 0 8px var(--go);
+}
+.board-foot,
+.board-link {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  font-size: 0.82em;
+}
+.board-foot {
+  padding-top: 0.7em;
+  border-top: 1px dashed rgba(124, 245, 214, 0.26);
+}
+.board-link {
+  justify-content: space-between;
+  margin-top: 0.2em;
+}
+.board-link span {
+  opacity: 0.72;
+}
+@media (min-width: 800px) {
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 31ch;
+    gap: 0 4ch;
+    align-items: start;
+  }
+  .stage-note {
+    margin-bottom: 0;
+  }
+}
+
+/* The display lights up line by line, once. */
+.lit {
+  animation: light 0.28s steps(9, end) both;
+}
+@keyframes light {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+.d1 { animation-delay: 0.15s; }
+.d2 { animation-delay: 0.21s; }
+.d3 { animation-delay: 0.27s; }
+.d4 { animation-delay: 0.33s; }
+.d5 { animation-delay: 0.39s; }
+.d6 { animation-delay: 0.45s; }
+.d7 { animation-delay: 0.51s; }
+.d8 { animation-delay: 0.57s; }
+.d9 { animation-delay: 0.63s; }
+.d10 { animation-delay: 0.69s; }
+.d11 { animation-delay: 0.75s; }
+.d12 { animation-delay: 0.81s; }
+.d13 { animation-delay: 0.87s; }
+
+/* The printer: at the bottom of a phone's screen, with one key. */
+.printer {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 10;
+  transform: translateX(-50%);
+  width: calc(var(--slip) + 40px);
+  max-width: 100%;
+  padding: 0 14px max(14px, env(safe-area-inset-bottom));
+  background: var(--machine);
+  border-radius: 16px 16px 0 0;
+  box-shadow: inset 0 1px 0 var(--machine-lip), 0 -8px 22px rgba(7, 8, 32, 0.42);
+}
+.slot {
+  height: 11px;
+  margin: 0 6px;
+  border-radius: 0 0 6px 6px;
+  background: #05061a;
+  box-shadow: inset 0 5px 6px #000;
+}
+.dock {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 10px;
+}
+.vfd {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45em 0.8em 0.4em;
+  border-radius: 7px;
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px #000, inset 0 3px 10px rgba(0, 0, 0, 0.9);
+  color: var(--glow);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(124, 245, 214, 0.55);
+}
+.vfd p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1ch;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.vfd-top {
+  font-size: 0.82em;
+  opacity: 0.72;
+}
+.vfd .led {
+  width: 0.42em;
+  height: 0.42em;
+}
+.key {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0.75em 1.6ch;
+  border-radius: 11px;
+  background: var(--go);
+  box-shadow: 0 4px 0 var(--go-edge);
+  color: var(--ink);
+  font-size: 1.08em;
+  text-decoration: none;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+.key:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--go-edge);
+}
+.key:focus-visible {
+  outline: 3px solid var(--paper);
+  outline-offset: 3px;
+}
+
+/* On a wide counter the sign and the printer stand to the left of the display, and the printer
+   is part of the page: it no longer rides at the bottom of the screen. */
+@media (min-width: 1180px) {
+  .hero {
+    grid-template-columns: var(--slip) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+  .mast {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .board {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .big {
+    font-size: 3em;
+  }
+  .printer {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    position: static;
+    transform: none;
+    width: auto;
+    max-width: none;
+    padding-bottom: 14px;
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 var(--machine-lip), 0 14px 34px rgba(8, 9, 40, 0.38);
+  }
+  .dock {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 11px;
+  }
+  .vfd-main {
+    font-size: 1.5em;
+    line-height: 1.25;
+  }
+  html {
+    scroll-padding-bottom: 18px;
+  }
+}
+
+/* ---- The page proper: bands -------------------------------------------------------------------
+   One per topic. Each has its own tone, so the eye knows it has moved on, and uses only its own
+   colours (the variables below). Every text colour here passes AA on its background. */
+
+.tone-night {
+  --bg: #0f1130;
+  --fg: #f5f6f4;
+  --soft: #c3c6e8;
+  --dim: #9a9ed2;
+  --hair: rgba(195, 198, 232, 0.2);
+  --accent: #7cf5d6;
+  --warn: #ffd43d;
+}
+.tone-paper {
+  --bg: #f5f6f4;
+  --fg: #1d2142;
+  --soft: #454a73;
+  --dim: #62678f;
+  --hair: rgba(29, 33, 66, 0.16);
+  --accent: #0b7a5e;
+  --warn: #b3261e;
+}
+.tone-counter {
+  --bg: #2a2d74;
+  --fg: #f5f6f4;
+  --soft: #cfd2ef;
+  --dim: #a9adde;
+  --hair: rgba(207, 210, 239, 0.26);
+  --accent: #7cf5d6;
+  --warn: #ffd43d;
+}
+.tone-mist {
+  --bg: #e9eaf6;
+  --fg: #1d2142;
+  --soft: #454a73;
+  --dim: #5d628b;
+  --hair: rgba(42, 45, 116, 0.18);
+  --accent: #2a2d74;
+  --warn: #b3261e;
+}
+
+.band {
+  padding: clamp(56px, 8vw, 112px) 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--text);
+  font-size: 1rem;
+  line-height: 1.55;
+  letter-spacing: 0.005em;
+}
+.band a {
+  color: var(--fg);
+}
+.band a:focus-visible,
+.band summary:focus-visible,
+.again:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.band p {
+  color: var(--soft);
+}
+.kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.6ch;
+  font-size: 0.9375rem;
+}
+.band .kicker {
+  color: var(--dim);
+}
+.kicker b {
+  color: var(--accent);
+  font-weight: 700;
+}
+.display {
+  max-width: 21ch;
+  margin-top: 0.28em;
+  font-family: var(--display);
+  font-size: clamp(2.125rem, 4.4vw + 1rem, 4.25rem);
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+.standfirst {
+  max-width: 34rem;
+  margin-top: 1.1em;
+  font-size: clamp(1.0625rem, 0.5vw + 0.95rem, 1.3125rem);
+  line-height: 1.5;
+}
+.band h3 {
+  font-family: var(--serif);
+  font-size: 1.4375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+}
+.dim {
+  color: var(--dim);
+}
+.lab {
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em 2.4ch;
+}
+/* The entry a link on this page points at. */
+.q:target h3,
+.work:target h3 {
+  color: var(--accent);
+}
+
+/* Something folded away until it is asked for. */
+.fold {
+  border-top: 1px solid var(--hair);
+}
+.fold > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 1.2ch;
+  padding: 0.8em 0;
+  cursor: pointer;
+  list-style: none;
+  color: var(--fg);
+  -webkit-tap-highlight-color: transparent;
+}
+.fold > summary::-webkit-details-marker {
+  display: none;
+}
+.fold-mark {
+  flex: none;
+  width: 1ch;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.875rem;
+}
+.fold-mark::before {
+  content: "+";
+}
+.fold-label {
+  flex: 1;
+  min-width: 0;
+}
+.fold[open] > summary .fold-mark::before {
+  content: "-";
+}
+.fold-body {
+  padding: 0 0 1.3em;
+}
+.fold-body > p {
+  max-width: 38rem;
+}
+.fold-body > p + p {
+  margin-top: 0.8em;
+}
+@media (hover: hover) {
+  .fold > summary:hover .fold-label {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--accent);
+  }
+}
+/* Opening and closing takes a moment where the browser can do it; elsewhere it is instant. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+  .fold {
+    interpolate-size: allow-keywords;
+  }
+  .fold::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size 0.3s ease, content-visibility 0.3s allow-discrete;
+  }
+  .fold[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* ---- Hashes only: the proof's way from the device to Stellar ---------------------------------- */
+
+.split-tail {
+  margin-top: clamp(28px, 4vw, 44px);
+}
+.caveat {
+  max-width: 34rem;
+  padding-left: 14px;
+  border-left: 2px solid var(--warn);
+  font-size: 0.9375rem;
+}
+.split-tail .links {
+  margin: 1.2em 0 1.6em;
+}
+.figures {
+  margin: 1.2em 0 0;
+  max-width: 30rem;
+  border-bottom: 1px solid var(--hair);
+}
+.figures div {
+  display: flex;
+  justify-content: space-between;
+  gap: 2ch;
+  padding: 0.5em 0;
+  border-top: 1px solid var(--hair);
+}
+.figures dt {
+  color: var(--soft);
+}
+.figures dd {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+/* The picture: three stops down the left, what each one is on the right. */
+.journey {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  align-items: center;
+  gap: 0 22px;
+  max-width: 400px;
+  margin-top: clamp(32px, 5vw, 52px);
+}
+.phone,
+.track,
+.contract {
+  grid-column: 1;
+  justify-self: center;
+}
+.cap b {
+  display: block;
+  color: var(--fg);
+  font-family: var(--serif);
+  font-size: 1.3125rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.cap span {
+  display: block;
+}
+.cap .cap-figures {
+  margin-top: 0.5em;
+  color: var(--dim);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.phone {
+  width: 136px;
+  padding: 9px;
+  border-radius: 26px;
+  background: var(--machine);
+  box-shadow: inset 0 0 0 1px var(--machine-lip), 0 18px 44px rgba(3, 4, 22, 0.55);
+}
+.screen {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 16px;
+  height: 192px;
+  border-radius: 18px;
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px #000, inset 0 3px 12px rgba(0, 0, 0, 0.9);
+  color: var(--glow);
+}
+.tree {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+.tree .row {
+  display: flex;
+  gap: 5px;
+}
+.tree .row span {
+  width: 9px;
+  height: 9px;
+  border-radius: 1.5px;
+  background: currentColor;
+  box-shadow: 0 0 6px rgba(124, 245, 214, 0.6);
+}
+.band .say,
+.band .panel p {
+  color: var(--glow);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(124, 245, 214, 0.55);
+}
+
+.track {
+  position: relative;
+  width: 150px;
+  height: 116px;
+}
+.rail {
+  position: absolute;
+  left: calc(50% - 1px);
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, rgba(124, 245, 214, 0.42) 0 6px, transparent 6px 12px);
+}
+/* The proof, as the slip it is on the demo's receipt. It comes to rest at the contract's door. */
+.chip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - 44px);
+  transform: translateX(-50%);
+  padding: 5px 9px 8px;
+  background:
+    linear-gradient(-45deg, var(--bg) 3.6px, transparent 0) 0 100% / 10px 10px repeat-x,
+    linear-gradient(45deg, var(--bg) 3.6px, transparent 0) 0 100% / 10px 10px repeat-x,
+    var(--paper);
+  box-shadow: 0 8px 18px rgba(3, 4, 22, 0.5);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.contract {
+  position: relative;
+  width: 150px;
+  margin-bottom: 46px;
+}
+.panel {
+  padding: 8px;
+  border-radius: 13px;
+  background: var(--machine);
+  box-shadow: inset 0 1px 0 var(--machine-lip), 0 16px 38px rgba(3, 4, 22, 0.55);
+}
+.panel-glass {
+  padding: 10px 11px 9px;
+  border-radius: 7px;
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px #000, inset 0 3px 10px rgba(0, 0, 0, 0.9);
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0.72;
+}
+.panel .led {
+  width: 6px;
+  height: 6px;
+}
+.panel-call {
+  margin-top: 5px;
+}
+.meter {
+  display: block;
+  width: 100%;
+  height: 7px;
+  margin: 10px 0 6px;
+}
+.meter .lane {
+  fill: rgba(124, 245, 214, 0.16);
+}
+.meter .fill {
+  fill: var(--glow);
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+}
+.stamp {
+  position: absolute;
+  right: -4px;
+  bottom: -44px;
+  width: 124px;
+  color: var(--glow);
+  transform: rotate(-7deg);
+}
+.stamp-small {
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 1.5px;
+}
+.again {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-top: 10px;
+  padding: 0.5em 0;
+  border: 0;
+  background: none;
+  color: var(--dim);
+  font: inherit;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+/* On the narrowest phones the machines are drawn a little smaller, so their captions keep a
+   readable measure. */
+@media (max-width: 379px) {
+  .journey {
+    grid-template-columns: 126px minmax(0, 1fr);
+    gap: 0 16px;
+  }
+  .phone {
+    width: 118px;
+    padding: 8px;
+    border-radius: 23px;
+  }
+  .screen {
+    height: 170px;
+    border-radius: 16px;
+  }
+  .tree .row {
+    gap: 4px;
+  }
+  .tree .row span {
+    width: 8px;
+    height: 8px;
+  }
+  .track,
+  .contract {
+    width: 126px;
+  }
+  .panel-glass {
+    padding: 9px 9px 8px;
+  }
+  .band .say,
+  .band .panel p {
+    font-size: 10px;
+  }
+  .stamp {
+    width: 112px;
+  }
+  .cap b {
+    font-size: 1.1875rem;
+  }
+}
+
+/* With room, the words stand on the left and the picture, drawn larger, on the right. */
+@media (min-width: 1180px) {
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 500px);
+    align-items: start;
+    gap: 0 clamp(28px, 6vw, 96px);
+  }
+  .split-head,
+  .split-tail {
+    grid-column: 1;
+  }
+  .journey {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    margin-top: 0;
+    zoom: 1.25;
+  }
+}
+
+/* ---- Still open: three questions, each with its picture --------------------------------------- */
+
+.trio {
+  display: grid;
+  margin-top: clamp(28px, 5vw, 56px);
+  border-bottom: 1px solid var(--hair);
+}
+.q {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: start;
+  gap: 0 18px;
+  padding: 26px 0 8px;
+  border-top: 1px solid var(--hair);
+  scroll-margin-top: 24px;
+}
+.picto {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 4px;
+  overflow: visible;
+}
+.q-short {
+  max-width: 30rem;
+  margin-top: 0.45em;
+}
+.q-tried {
+  display: flex;
+  gap: 1.2ch;
+  align-items: baseline;
+  margin: 0.7em 0 1em;
+  font-size: 0.9375rem;
+}
+.q .said {
+  display: flex;
+  gap: 1.2ch;
+  align-items: baseline;
+  color: var(--fg);
+}
+.acct {
+  fill: var(--accent);
+}
+.acct.asleep {
+  fill: none;
+  stroke: var(--warn);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 2.6;
+}
+.curve,
+.strike,
+.twig,
+.ring {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.curve {
+  stroke: var(--dim);
+  stroke-width: 2;
+}
+.strike {
+  stroke: var(--warn);
+  stroke-width: 2.5;
+}
+.twig {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  opacity: 0.55;
+}
+.node {
+  fill: var(--accent);
+}
+.ring {
+  stroke: var(--dim);
+  stroke-width: 1;
+  opacity: 0.55;
+}
+.vals circle {
+  fill: var(--bg);
+  stroke: var(--dim);
+  stroke-width: 1.5;
+}
+@media (min-width: 1180px) {
+  .trio {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 var(--gap);
+    border-bottom: 0;
+  }
+  .q {
+    display: flex;
+    flex-direction: column;
+    padding-top: 30px;
+  }
+  .q-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+  .q-text .fold {
+    margin-top: auto;
+  }
+  .picto {
+    width: 132px;
+    margin: 0 0 22px;
+  }
+}
+
+/* ---- Built so far: one card per work ---------------------------------------------------------- */
+
+.works {
+  display: grid;
+  gap: 14px;
+  list-style: none;
+  margin: clamp(28px, 5vw, 56px) 0 0;
+  padding: 0;
+}
+.work {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 18px;
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  scroll-margin-top: 24px;
+}
+.band .work-state {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  margin-bottom: 14px;
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.work-state .led {
+  width: 7px;
+  height: 7px;
+  background: rgba(207, 210, 239, 0.3);
+}
+.work-state .led.on {
+  background: var(--glow);
+}
+.band .work-state .area {
+  margin-left: auto;
+  color: var(--dim);
+}
+.work-text {
+  margin-top: 0.5em;
+}
+.band .work-caveat {
+  margin-top: 0.6em;
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+.work-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.3em 2ch;
+  margin-top: auto;
+  padding-top: 1.1em;
+  font-size: 0.9375rem;
+}
+.band .work-foot .by {
+  color: var(--dim);
+}
+.work.yours {
+  border-style: dashed;
+}
+@media (min-width: 800px) {
+  .works {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap);
+  }
+}
+@media (min-width: 1180px) {
+  .works {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .work.yours {
+    grid-column: span 2;
+  }
+  .work.yours .work-text {
+    max-width: 36rem;
+  }
+}
+
+/* ---- Read on: the documents and the short answers, folded ------------------------------------- */
+
+.folds {
+  margin-top: clamp(24px, 4vw, 44px);
+  border-bottom: 1px solid var(--hair);
+}
+.folds > .fold > summary {
+  padding: 1.05em 0;
+}
+.folds > .fold > summary b {
+  font-family: var(--serif);
+  font-size: 1.4375rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.folds > .fold > summary .fold-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 1.6ch;
+}
+.folds > .fold > summary .fold-label span {
+  color: var(--dim);
+}
+.sources {
+  display: grid;
+  gap: 1.8em var(--gap);
+  padding-top: 0.4em;
+}
+.band .source-group h3 {
+  color: var(--dim);
+  font-family: var(--text);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+.source-group ul {
+  list-style: none;
+  margin: 0.5em 0 0;
+  padding: 0;
+  border-bottom: 1px solid var(--hair);
+}
+.source-group li {
+  padding: 0.6em 0 0.65em;
+  border-top: 1px solid var(--hair);
+}
+.source-group a {
+  font-weight: 700;
+}
+.source-group li span {
+  display: block;
+  color: var(--soft);
+}
+@media (min-width: 800px) {
+  .sources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1180px) {
+  .sources {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.answers {
+  max-width: 46rem;
+}
+.answers details {
+  border-top: 1px solid var(--hair);
+}
+.answers summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.8em 0;
+  color: var(--fg);
+  font-weight: 700;
+}
+.answers summary::-webkit-details-marker {
+  display: none;
+}
+.answers summary::before {
+  content: "+ ";
+  color: var(--accent);
+  font-family: var(--mono);
+  font-weight: 400;
+}
+.answers details[open] summary::before {
+  content: "- ";
+}
+.answers p {
+  max-width: 40rem;
+  margin: 0 0 1.1em;
+  padding-left: 1.2em;
+}
+
+/* The foot of the page. On a phone it leaves room for the printer. */
+.foot {
+  padding: 40px 0 calc(var(--printer, 92px) + 34px);
+  border-top: 1px solid var(--hair);
+}
+.colophon p {
+  max-width: 44rem;
+  font-size: 0.875rem;
+  color: var(--dim);
+}
+.colophon p + p {
+  margin-top: 0.8em;
+}
+@media (min-width: 1180px) {
+  .foot {
+    padding-bottom: 48px;
+  }
+}
+
+/* ---- The pictures play ------------------------------------------------------------------------
+   Each picture is drawn finished: that is what a browser without JavaScript, or a reader who asked
+   for less motion, sees. Where motion is welcome, hub.js marks the page (.motion) and each picture
+   as it comes into view (.play). Until then a picture waits at its first frame; then every part
+   takes its turn, once. */
+
+.motion .journey:not(.play) .tree .row span {
+  opacity: 0.14;
+  box-shadow: none;
+}
+.motion .journey:not(.play) .say,
+.motion .journey:not(.play) .chip,
+.motion .journey:not(.play) .stamp,
+.motion .journey:not(.play) .panel-foot,
+.motion .journey:not(.play) .again {
+  opacity: 0;
+}
+.motion .journey:not(.play) .panel .led {
+  background: #1c3f37;
+  box-shadow: none;
+}
+.motion .journey:not(.play) .panel-call {
+  opacity: 0.3;
+}
+.motion .journey:not(.play) .meter .fill {
+  transform: scaleX(0);
+}
+
+.motion .journey.play .tree .row span {
+  animation: hash 0.32s ease-out backwards;
+}
+@keyframes hash {
+  from {
+    opacity: 0.14;
+    box-shadow: none;
+    transform: scale(0.6);
+  }
+}
+.motion .journey.play .r8 span:nth-child(1) { animation-delay: 0.1s; }
+.motion .journey.play .r8 span:nth-child(2) { animation-delay: 0.16s; }
+.motion .journey.play .r8 span:nth-child(3) { animation-delay: 0.22s; }
+.motion .journey.play .r8 span:nth-child(4) { animation-delay: 0.28s; }
+.motion .journey.play .r8 span:nth-child(5) { animation-delay: 0.34s; }
+.motion .journey.play .r8 span:nth-child(6) { animation-delay: 0.4s; }
+.motion .journey.play .r8 span:nth-child(7) { animation-delay: 0.46s; }
+.motion .journey.play .r8 span:nth-child(8) { animation-delay: 0.52s; }
+.motion .journey.play .r4 span:nth-child(1) { animation-delay: 0.66s; }
+.motion .journey.play .r4 span:nth-child(2) { animation-delay: 0.74s; }
+.motion .journey.play .r4 span:nth-child(3) { animation-delay: 0.82s; }
+.motion .journey.play .r4 span:nth-child(4) { animation-delay: 0.9s; }
+.motion .journey.play .r2 span:nth-child(1) { animation-delay: 1.04s; }
+.motion .journey.play .r2 span:nth-child(2) { animation-delay: 1.14s; }
+.motion .journey.play .r1 span { animation-delay: 1.32s; }
+.motion .journey.play .say {
+  animation: show 0.01s 1.6s backwards;
+}
+@keyframes show {
+  from {
+    opacity: 0;
+  }
+}
+/* Each caption answers when its stop does. */
+.motion .journey.play .cap b {
+  animation: cue 1.1s ease-out backwards;
+}
+@keyframes cue {
+  12% {
+    color: var(--accent);
+  }
+}
+.motion .journey.play .cap:nth-of-type(1) b { animation-delay: 0.1s; }
+.motion .journey.play .cap:nth-of-type(2) b { animation-delay: 1.75s; }
+.motion .journey.play .cap:nth-of-type(3) b { animation-delay: 3s; }
+/* The slip leaves the device and rides the rail down; the rail runs with it. */
+.motion .journey.play .rail {
+  animation: run 0.42s linear 1.75s 3 backwards;
+}
+@keyframes run {
+  to {
+    background-position-y: 12px;
+  }
+}
+.motion .journey.play .chip {
+  animation: ride 1.25s cubic-bezier(0.6, 0, 0.3, 1) 1.75s backwards;
+}
+@keyframes ride {
+  from {
+    top: -14px;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+}
+.motion .journey.play .panel .led {
+  animation: wake 0.01s 3s backwards;
+}
+@keyframes wake {
+  from {
+    background: #1c3f37;
+    box-shadow: none;
+  }
+}
+.motion .journey.play .panel-call {
+  animation: dimmed 0.01s 3s backwards;
+}
+@keyframes dimmed {
+  from {
+    opacity: 0.3;
+  }
+}
+.motion .journey.play .meter .fill {
+  animation: fill 0.8s cubic-bezier(0.3, 0, 0.2, 1) 3.1s backwards;
+}
+@keyframes fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+.motion .journey.play .panel-foot {
+  animation: show 0.01s 3.1s backwards;
+}
+.motion .journey.play .panel {
+  animation: thud 0.3s ease-out 4.17s backwards;
+}
+@keyframes thud {
+  30% {
+    transform: translateY(3px);
+  }
+}
+/* Once it is over, it can be asked for again. */
+.motion .journey.play .again {
+  animation: fade 0.4s ease-out 4.7s backwards;
+}
+/* The stamp comes down. */
+.motion .journey.play .stamp {
+  animation: slam 0.36s cubic-bezier(0.3, 1.5, 0.5, 1) 4.05s backwards;
+}
+@keyframes slam {
+  from {
+    opacity: 0;
+    transform: rotate(-7deg) scale(1.8);
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
+/* Still open. The accounts move over, column by column; three do not. */
+.motion .q:not(.play) .acct.asleep {
+  stroke: var(--dim);
+}
+.motion .q:not(.play) .acct:not(.asleep),
+.motion .q:not(.play) .curve,
+.motion .q:not(.play) .node,
+.motion .q:not(.play) .twig,
+.motion .q:not(.play) .strike {
+  opacity: 0;
+}
+.motion .q.play .acct:not(.asleep) {
+  animation: pop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) backwards;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+.motion .q.play .acct:nth-child(5n + 1) { animation-delay: 0.15s; }
+.motion .q.play .acct:nth-child(5n + 2) { animation-delay: 0.33s; }
+.motion .q.play .acct:nth-child(5n + 3) { animation-delay: 0.51s; }
+.motion .q.play .acct:nth-child(5n + 4) { animation-delay: 0.69s; }
+.motion .q.play .acct:nth-child(5n + 5) { animation-delay: 0.87s; }
+.motion .q.play .acct.asleep {
+  animation: doze 1.5s ease-in-out 1.35s backwards;
+}
+@keyframes doze {
+  from,
+  40% {
+    stroke: var(--dim);
+  }
+  20%,
+  60% {
+    stroke: var(--warn);
+  }
+}
+/* The curve is drawn, then struck out; the tree of hashes grows from its leaves. */
+.motion .q.play .curve {
+  animation: draw 0.8s ease-out 0.15s backwards;
+}
+.motion .q.play .strike {
+  animation: draw 0.3s ease-out 1.05s backwards;
+}
+@keyframes draw {
+  from {
+    opacity: 0;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  2% {
+    opacity: 1;
+  }
+  to {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+}
+.motion .q.play .node {
+  animation: pop 0.36s cubic-bezier(0.3, 1.6, 0.5, 1) backwards;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+.motion .q.play .n3 { animation-delay: 1.5s; }
+.motion .q.play .n2 { animation-delay: 1.78s; }
+.motion .q.play .n1 { animation-delay: 2.06s; }
+.motion .q.play .twig {
+  animation: fade 0.5s ease-out 1.7s backwards;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+/* A round of signatures goes around the ring, twice. */
+.motion .q.play .vals circle {
+  animation: sign 0.7s ease-in-out 2 backwards;
+}
+@keyframes sign {
+  40% {
+    fill: var(--accent);
+    stroke: var(--accent);
+  }
+}
+.motion .q.play .vals circle:nth-child(1) { animation-delay: 0.2s; }
+.motion .q.play .vals circle:nth-child(2) { animation-delay: 0.32s; }
+.motion .q.play .vals circle:nth-child(3) { animation-delay: 0.44s; }
+.motion .q.play .vals circle:nth-child(4) { animation-delay: 0.56s; }
+.motion .q.play .vals circle:nth-child(5) { animation-delay: 0.68s; }
+.motion .q.play .vals circle:nth-child(6) { animation-delay: 0.8s; }
+.motion .q.play .vals circle:nth-child(7) { animation-delay: 0.92s; }
+.motion .q.play .vals circle:nth-child(8) { animation-delay: 1.04s; }
+
+/* Built so far: the lamp of what is running comes on as its card comes into view. Each card is
+   its own scene, so the list can grow longer than a screen; cards that arrive together light one
+   after another. */
+.motion .work:not(.play) .led.on {
+  background: rgba(207, 210, 239, 0.3);
+  box-shadow: none;
+}
+.motion .work.play .led.on {
+  animation: lamp 0.01s 0.2s backwards;
+}
+@keyframes lamp {
+  from {
+    background: rgba(207, 210, 239, 0.3);
+    box-shadow: none;
+  }
+}
+.motion .work.play:nth-child(3n + 2) .led.on { animation-delay: 0.42s; }
+.motion .work.play:nth-child(3n) .led.on { animation-delay: 0.64s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lit {
+    animation: none;
+  }
+}

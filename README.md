@@ -1,5 +1,7 @@
 # Quantum on Stellar
 
+**The page: https://quantumonstellar.aircade.xyz**
+
 A community page that gathers the post-quantum work around the Stellar network in one place:
 where the Stellar Development Foundation's Quantum Preparedness Plan stands, what it leaves open,
 what people have built so far (signatures, zero-knowledge proofs, privacy, account recovery),

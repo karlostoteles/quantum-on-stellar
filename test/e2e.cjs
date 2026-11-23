@@ -272,6 +272,15 @@ async function run() {
         await page.locator('#hub-line a').click();
         await page.waitForURL((url) => url.pathname === new URL(site.url).pathname);
         check('and back at the page', /quantum on stellar/i.test(await text(page, 'h1')));
+        // The demo's other pages that the list links to, the same way.
+        for (const card of await page.$$eval('.work a[href^="demo/"]', (links) => links.map((a) => a.getAttribute('href')).filter((h) => h !== 'demo/'))) {
+          await page.locator(`.work a[href="${card}"]`).click();
+          await page.waitForURL((url) => url.pathname.endsWith('/' + card));
+          await page.waitForFunction(() => !document.getElementById('hub-line').hidden, null, { timeout: 20000 });
+          check(card + ' opens from its card', (await text(page, 'h1')).length > 0 && /quantum on stellar \/ demo \//i.test(await text(page, '#hub-line')), await text(page, 'h1'));
+          await page.locator('#hub-line a').click();
+          await page.waitForURL((url) => url.pathname === new URL(site.url).pathname);
+        }
         check('no errors on the way', errors.length === 0, errors.join(' | ').slice(0, 200));
         await context.close();
       }

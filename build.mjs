@@ -54,7 +54,11 @@ if (existsSync(join(here, 'og.png'))) copyFileSync(join(here, 'og.png'), join(ou
 // For search engines, once the site has an address: what may be read and where the pages are.
 if (siteUrl) {
   writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
-  const pages = [`<url><loc>${siteUrl}/</loc><lastmod>${content.checked}</lastmod></url>`, ...(demoSite ? [`<url><loc>${siteUrl}/demo/</loc></url>`] : [])];
+  // The demo's pages: its index, and any other page it has, at its address without .html.
+  const demoPages = demoSite
+    ? ['', ...readdirSync(demoSite).filter((f) => f.endsWith('.html') && f !== 'index.html').map((f) => f.slice(0, -'.html'.length)).sort()]
+    : [];
+  const pages = [`<url><loc>${siteUrl}/</loc><lastmod>${content.checked}</lastmod></url>`, ...demoPages.map((p) => `<url><loc>${siteUrl}/demo/${p}</loc></url>`)];
   writeFileSync(
     join(out, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  ${pages.join('\n  ')}\n</urlset>\n`,

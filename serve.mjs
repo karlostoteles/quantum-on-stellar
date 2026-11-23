@@ -36,6 +36,8 @@ const matches = (rule, path) => (rule.endsWith('*') ? path.startsWith(rule.slice
 createServer((request, response) => {
   let path = decodeURIComponent(new URL(request.url, 'http://x').pathname);
   if (path.endsWith('/')) path += 'index.html';
+  // As static hosts do: a page is also served at its address without .html.
+  if (!extname(path) && existsSync(normalize(join(root, path + '.html')))) path += '.html';
   const file = normalize(join(root, path));
   if (!file.startsWith(root) || path === '/_headers' || !existsSync(file) || !statSync(file).isFile()) {
     response.writeHead(404, { 'Content-Type': 'text/plain' }).end('not found');

@@ -176,6 +176,24 @@
       "byUrl": ""
     },
     {
+      "id": "savings",
+      "title": "Prove a withdrawal from a savings pool",
+      "by": "Carlos de la Figuera",
+      "area": "Proofs",
+      "status": "On testnet",
+      "live": true,
+      "text": "A use case for the verifier: the proof a savings pool asks for before it pays a withdrawal that does not name its deposit. Your device generates it and a contract on testnet checks it in a simulated call. Nothing is deposited or withdrawn.",
+      "caveat": "Research prototype, not audited. The hiding is unreviewed and nothing here shows anonymity.",
+      "links": [
+        {
+          "text": "Run it here",
+          "href": "demo/savings",
+          "internal": true
+        }
+      ],
+      "byUrl": ""
+    },
+    {
       "id": "verifier",
       "title": "Verify a STARK on Stellar",
       "by": "Carlos de la Figuera",
